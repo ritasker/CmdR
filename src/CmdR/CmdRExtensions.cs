@@ -1,6 +1,6 @@
+using System;
 using System.Linq;
 using System.Reflection;
-using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,37 +10,28 @@ namespace CmdR
     {
         public static void AddCmdR(this IServiceCollection services)
         {
-            RegisterCommandValidators(services);
             RegisterCommandHandlers(services);
         }
 
         private static void RegisterCommandHandlers(IServiceCollection services)
         {
-            var handlers = Assembly.GetEntryAssembly().GetTypes().ToList()
-                .Where(typeof(CommandHandler<>).IsAssignableFrom)
-                .Where(t => !t.GetTypeInfo().IsAbstract);
+            var handlers = Assembly.GetEntryAssembly().GetTypes()
+                .Where(t =>
+                    !t.IsAbstract
+                    && !t.IsInterface
+                    && t.BaseType != null
+                    && t.BaseType.IsGenericType
+                    && t.BaseType.GetGenericTypeDefinition() == typeof(CommandHandler<>));
 
             foreach (var handler in handlers)
             {
-                services.AddSingleton(typeof(CommandHandler<>), handler);
-            }
-        }
-
-        private static void RegisterCommandValidators(IServiceCollection services)
-        {
-            var validators = Assembly.GetEntryAssembly().GetTypes().ToList()
-                .Where(typeof(IValidator).IsAssignableFrom)
-                .Where(t => !t.GetTypeInfo().IsAbstract);
-
-            foreach (var validator in validators)
-            {
-                services.AddSingleton(typeof(IValidator), validator);
+                services.AddScoped(typeof(ICommandHandler),handler);
             }
         }
 
         public static void UseCmdR(this IApplicationBuilder app)
         {
-            app.UseMiddleware<CmdRMiddleware>();
+             app.UseMiddleware<CmdRMiddleware>();
         }
     }
 }

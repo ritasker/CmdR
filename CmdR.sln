@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{F9E0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicSample", "samples\BasicSample\BasicSample.csproj", "{34A14BD2-5C69-49BB-A0C1-0E75F1814FAD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdR.Tests", "tests\CmdR.Tests\CmdR.Tests.csproj", "{5A3C57BB-30AB-4777-8422-50B7E53F2A38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,18 @@ Global
 		{34A14BD2-5C69-49BB-A0C1-0E75F1814FAD}.Release|x64.Build.0 = Release|Any CPU
 		{34A14BD2-5C69-49BB-A0C1-0E75F1814FAD}.Release|x86.ActiveCfg = Release|Any CPU
 		{34A14BD2-5C69-49BB-A0C1-0E75F1814FAD}.Release|x86.Build.0 = Release|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Debug|x64.Build.0 = Debug|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Debug|x86.Build.0 = Debug|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Release|x64.ActiveCfg = Release|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Release|x64.Build.0 = Release|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Release|x86.ActiveCfg = Release|Any CPU
+		{5A3C57BB-30AB-4777-8422-50B7E53F2A38}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{883E6EBB-E1A0-4149-B503-DC214FCB8606} = {EAD54AB4-3CEE-4710-98B8-DCFAA31F38D6}
