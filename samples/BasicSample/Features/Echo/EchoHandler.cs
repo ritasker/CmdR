@@ -6,9 +6,9 @@ namespace BasicSample.Features.Echo
 {
     public class EchoHandler : CommandHandler<Echo>
     {
-        public override async Task Handle(Echo command)
+        protected override Task Handle(Echo command)
         {
-            await Context.Response.WriteAsync($"echo: {command.Message}");
+            return Context.Response.WriteAsync($"echo: {command.Message}");
         }
     }
 }

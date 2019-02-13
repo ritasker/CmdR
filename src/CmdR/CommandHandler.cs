@@ -1,4 +1,7 @@
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Jil;
 using Microsoft.AspNetCore.Http;
 
 namespace CmdR
@@ -10,14 +13,36 @@ namespace CmdR
             Path = path;
         }
 
-        public abstract Task Handle(TCommand command);
+        public Task HandleRequest(HttpContext context)
+        {
+            Context = context;
+            var command = GetCommand(context);
 
-        protected HttpContext Context { get; set; }
+            // Validate
+
+            return Handle(command);
+        }
+
+        private static TCommand GetCommand(HttpContext context)
+        {
+            using (var input = new StringReader(AsString(context.Request.Body)))
+            {
+                return JSON.Deserialize<TCommand>(input);
+            }
+        }
+
+        protected abstract Task Handle(TCommand command);
+
         public string Path { get; }
-    }
+        protected HttpContext Context { get; private set; }
 
-    public interface ICommandHandler
-    {
-        string Path { get; }
+
+        private static string AsString(Stream stream)
+        {
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                return reader.ReadToEnd();
+            }
+        }
     }
 }

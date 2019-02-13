@@ -24,13 +24,19 @@ namespace CmdR
 
             foreach (var handler in handlers)
             {
-                services.AddScoped(typeof(ICommandHandler),handler);
+                services.AddSingleton(typeof(ICommandHandler),handler);
             }
         }
 
-        public static void UseCmdR(this IApplicationBuilder app)
+        public static IApplicationBuilder UseCmdR(this IApplicationBuilder builder)
         {
-             app.UseMiddleware<CmdRMiddleware>();
+            return builder.UseRouting(cfg =>
+            {
+                foreach (var handler in cfg.ServiceProvider.GetServices<ICommandHandler>())
+                {
+                    cfg.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
+                }
+            });
         }
     }
 }
