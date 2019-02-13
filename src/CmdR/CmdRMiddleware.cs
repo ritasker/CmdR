@@ -11,9 +11,9 @@ namespace CmdR
         {
             _next = next;
         }
+        
         public Task InvokeAsync(HttpContext context)
         {
-            
             return _next(context);
         }
     }
