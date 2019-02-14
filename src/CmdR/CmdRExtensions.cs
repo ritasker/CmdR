@@ -1,5 +1,7 @@
 using System.Linq;
 using System.Reflection;
+using CmdR.Validation;
+using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +11,21 @@ namespace CmdR
     {
         public static void AddCmdR(this IServiceCollection services)
         {
+            services.AddSingleton<IValidatorLocator, ValidatorLocator>();
+            
+            RegisterCommandValidators(services);
             RegisterCommandHandlers(services);
+        }
+
+        private static void RegisterCommandValidators(IServiceCollection services)
+        {
+            var validators = Assembly.GetEntryAssembly().GetTypes()
+                .Where(t => typeof(IValidator).IsAssignableFrom(t) && !t.GetTypeInfo().IsAbstract);
+
+            foreach (var validator in validators)
+            {
+                services.AddSingleton(typeof(IValidator), validator);
+            }
         }
 
         private static void RegisterCommandHandlers(IServiceCollection services)
@@ -28,9 +44,9 @@ namespace CmdR
             }
         }
 
-        public static IApplicationBuilder UseCmdR(this IApplicationBuilder builder)
+        public static void UseCmdR(this IApplicationBuilder builder)
         {
-            return builder.UseRouting(cfg =>
+            builder.UseRouting(cfg =>
             {
                 foreach (var handler in cfg.ServiceProvider.GetServices<ICommandHandler>())
                 {
