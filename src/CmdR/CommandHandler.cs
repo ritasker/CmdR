@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CmdR.Validation;
@@ -33,12 +31,12 @@ namespace CmdR
                 return Handle(command);   
             }
 
-            context.Response.StatusCode = 412;
+            context.Response.StatusCode = 422;
             context.Response.Headers.Add("content-type", "application/json");
             return context.Response.WriteAsync(FormatErrors(result.Errors));
         }
 
-        private string FormatErrors(IList<ValidationFailure> validationFailures)
+        private string FormatErrors(IEnumerable<ValidationFailure> validationFailures)
         {
             var validationResultModel = new ValidationResultModel();
             

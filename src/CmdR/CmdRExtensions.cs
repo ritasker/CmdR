@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using CmdR.Validation;
@@ -14,7 +15,8 @@ namespace CmdR
             services.AddSingleton<IValidatorLocator, ValidatorLocator>();
             
             RegisterCommandValidators(services);
-            RegisterCommandHandlers(services);
+            RegisterCommandHandlers(typeof(PostCommandHandler<>), services);
+            RegisterCommandHandlers(typeof(PutCommandHandler<>), services);
         }
 
         private static void RegisterCommandValidators(IServiceCollection services)
@@ -28,7 +30,7 @@ namespace CmdR
             }
         }
 
-        private static void RegisterCommandHandlers(IServiceCollection services)
+        private static void RegisterCommandHandlers(Type commandHandlerType, IServiceCollection services)
         {
             var handlers = Assembly.GetEntryAssembly().GetTypes()
                 .Where(t =>
@@ -36,11 +38,11 @@ namespace CmdR
                     && !t.IsInterface
                     && t.BaseType != null
                     && t.BaseType.IsGenericType
-                    && t.BaseType.GetGenericTypeDefinition() == typeof(CommandHandler<>));
+                    && t.BaseType.GetGenericTypeDefinition() == commandHandlerType);
 
             foreach (var handler in handlers)
             {
-                services.AddSingleton(typeof(ICommandHandler),handler);
+                services.AddSingleton(typeof(ICommandHandler), handler);
             }
         }
 
@@ -50,7 +52,15 @@ namespace CmdR
             {
                 foreach (var handler in cfg.ServiceProvider.GetServices<ICommandHandler>())
                 {
-                    cfg.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
+                    if (handler.GetType().BaseType.GetGenericTypeDefinition() == typeof(PostCommandHandler<>))
+                    {
+                        cfg.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
+                    }
+                    
+                    if (handler.GetType().BaseType.GetGenericTypeDefinition() == typeof(PutCommandHandler<>))
+                    {
+                        cfg.MapPut(handler.Path, ctx => handler.HandleRequest(ctx));
+                    }
                 }
             });
         }

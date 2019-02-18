@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace BasicSample.Features.Echo
 {
-    public class EchoHandler : CommandHandler<Echo>
+    public class EchoHandler : PostCommandHandler<Echo>
     {
         protected override Task Handle(Echo command)
         {
