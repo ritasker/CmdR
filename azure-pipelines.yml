@@ -3,9 +3,6 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-trigger:
-- master
-
 pool:
   vmImage: 'Ubuntu-16.04'
 
@@ -13,5 +10,23 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: DotNetCoreInstaller@0
+  inputs:
+    version: '3.0.100-preview-010184' # replace this value with the version that you need for your project
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build CmdR'  
+- script: |
+    mkdir $(Build.SourcesDirectory)\results
+    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura  tests\CmdR.Tests
+    dotnet tool install dotnet-reportgenerator-globaltool --tool-path .
+    .\reportgenerator "-reports:$(Build.SourcesDirectory)\CmdR.Tests\coverage.cobertura.xml" "-targetdir:results" "-reporttypes:HTMLInline;HTMLChart"
+  displayName: 'Run Tests'
+- task: PublishTestResults@2
+  inputs:
+    testRunner: xunit
+    testResultsFiles: '**/*.trx'
+- task: PublishCodeCoverageResults@1
+  inputs:
+    summaryFileLocation: $(Build.SourcesDirectory)\results\coverage.cobertura.xml
+    reportDirectory: $(Build.SourcesDirectory)\results
+    codecoverageTool: cobertura
