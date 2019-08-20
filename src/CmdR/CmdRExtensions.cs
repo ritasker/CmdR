@@ -3,15 +3,19 @@ using System.Linq;
 using System.Reflection;
 using CmdR.Validation;
 using FluentValidation;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
 
 namespace CmdR
 {
+    using Microsoft.AspNetCore.Routing;
+
+
     public static class CmdRExtensions
     {
         public static void AddCmdR(this IServiceCollection services)
         {
+            services.AddRouting();
             services.AddSingleton<IValidatorLocator, ValidatorLocator>();
             
             RegisterCommandValidators(services);
@@ -48,21 +52,23 @@ namespace CmdR
 
         public static void UseCmdR(this IApplicationBuilder builder)
         {
-            builder.UseRouting(cfg =>
+            var routeBuilder = new RouteBuilder(builder);
+            
+            foreach (var handler in builder.ApplicationServices.GetServices<ICommandHandler>())
             {
-                foreach (var handler in cfg.ServiceProvider.GetServices<ICommandHandler>())
+                var handlerType = handler.GetType().BaseType?.GetGenericTypeDefinition();
+                
+                if (handlerType == typeof(PostCommandHandler<>))
                 {
-                    if (handler.GetType().BaseType.GetGenericTypeDefinition() == typeof(PostCommandHandler<>))
-                    {
-                        cfg.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
-                    }
-                    
-                    if (handler.GetType().BaseType.GetGenericTypeDefinition() == typeof(PutCommandHandler<>))
-                    {
-                        cfg.MapPut(handler.Path, ctx => handler.HandleRequest(ctx));
-                    }
+                    routeBuilder.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
                 }
-            });
+                if (handlerType == typeof(PutCommandHandler<>))
+                {
+                    routeBuilder.MapPut(handler.Path, ctx => handler.HandleRequest(ctx));
+                }
+            }
+
+            builder.UseRouter(routeBuilder.Build());
         }
     }
 }
