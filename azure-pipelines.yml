@@ -11,11 +11,6 @@ variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 steps:
-  - task: DotNetCoreInstaller@0
-    displayName: 'Use .NET Core sdk 3.0.100-preview-010184'
-    inputs:
-      version: 3.0.100-preview-010184
-
 # build all projects
   - task: DotNetCoreCLI@2
     displayName: dotnet build
