@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using CmdR.Validation;
 using FluentValidation;
 using FluentValidation.Results;
 using Jil;
@@ -11,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CmdR
 {
+    using Validation;
+
     public abstract class CommandHandler<TCommand> : ICommandHandler
     {
         protected CommandHandler(string path = "/")

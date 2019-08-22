@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using CmdR.Validation;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 namespace CmdR
 {
     using Microsoft.AspNetCore.Routing;
+    using Validation;
 
 
     public static class CmdRExtensions
