@@ -52,23 +52,22 @@ namespace CmdR
 
         public static void UseCmdR(this IApplicationBuilder builder)
         {
-            var routeBuilder = new RouteBuilder(builder);
-            
-            foreach (var handler in builder.ApplicationServices.GetServices<ICommandHandler>())
+            builder.UseRouting();
+            builder.UseEndpoints(cfg =>
             {
-                var handlerType = handler.GetType().BaseType?.GetGenericTypeDefinition();
-                
-                if (handlerType == typeof(PostCommandHandler<>))
+                foreach (var handler in cfg.ServiceProvider.GetServices<ICommandHandler>())
                 {
-                    routeBuilder.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
+                    if (handler.GetType().BaseType.GetGenericTypeDefinition() == typeof(PostCommandHandler<>))
+                    {
+                        cfg.MapPost(handler.Path, ctx => handler.HandleRequest(ctx));
+                    }
+                    
+                    if (handler.GetType().BaseType.GetGenericTypeDefinition() == typeof(PutCommandHandler<>))
+                    {
+                        cfg.MapPut(handler.Path, ctx => handler.HandleRequest(ctx));
+                    }
                 }
-                if (handlerType == typeof(PutCommandHandler<>))
-                {
-                    routeBuilder.MapPut(handler.Path, ctx => handler.HandleRequest(ctx));
-                }
-            }
-
-            builder.UseRouter(routeBuilder.Build());
+            });
         }
     }
 }

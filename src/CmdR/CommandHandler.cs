@@ -88,7 +88,7 @@ namespace CmdR
         {
             using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
-                return reader.ReadToEnd();
+                return reader.ReadToEndAsync().GetAwaiter().GetResult();
             }
         }
     }
