@@ -11,6 +11,8 @@ jobs:
     steps:
       - run: dotnet --info
       - uses: actions/checkout@v1
+        with:
+          ref: ${GITHUB_REF} 
       - if: contains(matrix.runs-on, 'windows')
         run: build.cmd
       - if: contains(matrix.runs-on, 'ubuntu')
