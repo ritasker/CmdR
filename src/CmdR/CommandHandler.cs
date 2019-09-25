@@ -1,20 +1,19 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using FluentValidation.Results;
-using Jil;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace CmdR
 {
+    using FluentValidation;
+    using FluentValidation.Results;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+    using System.Text.Json;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading.Tasks;
     using Validation;
 
     public abstract class CommandHandler<TCommand> : ICommandHandler
     {
-        protected CommandHandler(string path = "/")
+        protected CommandHandler(string path)
         {
             Path = path;
         }
@@ -56,12 +55,7 @@ namespace CmdR
             }
 
             validationResultModel.Errors = errors;
-
-            using(var output = new StringWriter())
-            {
-                JSON.Serialize(validationResultModel,output);
-                return output.ToString();
-            }
+            return JsonSerializer.Serialize(validationResultModel);
         }
 
         private static IValidator GetValidator(HttpContext context)
@@ -72,10 +66,8 @@ namespace CmdR
 
         private static TCommand GetCommand(HttpContext context)
         {
-            using (var input = new StringReader(AsString(context.Request.Body)))
-            {
-                return JSON.Deserialize<TCommand>(input);
-            }
+            
+            return JsonSerializer.Deserialize<TCommand>(AsString(context.Request.BodyReader.AsStream()));
         }
 
         protected abstract Task Handle(TCommand command);
@@ -88,7 +80,7 @@ namespace CmdR
         {
             using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
-                return reader.ReadToEnd();
+                return reader.ReadToEndAsync().GetAwaiter().GetResult();
             }
         }
     }
