@@ -1,20 +1,23 @@
-name: CI    
-on: [push, pull_request]
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
     
 jobs:
   build:
-    strategy:
-      matrix:
-        runs-on: [ubuntu-18.04, windows-2019]
-    name: ${{ matrix.runs-on }}
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ubuntu-latest
     steps:
-      - run: dotnet --info
-      - uses: actions/checkout@v1
-      - uses: actions/setup-dotnet@v1
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          dotnet-version: '3.0.100'
-      - if: contains(matrix.runs-on, 'windows')
-        run: build.cmd
-      - if: contains(matrix.runs-on, 'ubuntu')
+          fetch-depth: 0
+      - name: Setup dotnet 6.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - name: Build and Test
         run: ./build.sh
