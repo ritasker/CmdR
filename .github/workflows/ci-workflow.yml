@@ -19,5 +19,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-      - name: Build and Test
-        run: ./build.sh
+      - name: Build 
+        run: dotnet build --configuration Release
+      - name: Test
+        run: dotnet test --configuration Release --no-build

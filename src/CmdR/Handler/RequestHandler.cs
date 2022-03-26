@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -17,9 +16,21 @@ public abstract class RequestHandler<TResponse> : BaseHandler
 
 public abstract class RequestHandler<TRequest, TResponse> : BaseHandler
 {
-    internal override Task ExecuteAsync(HttpContext ctx, CancellationToken ct)
+    internal override async Task ExecuteAsync(HttpContext ctx, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var request = await BindAsync(ctx, ct);
+        await ctx.Response.WriteAsJsonAsync(await HandleAsync(request, ct), ct);
+    }
+
+    private async Task<TRequest> BindAsync(HttpContext ctx, CancellationToken ct)
+    {
+        TRequest? request = default;
+        if (ctx.Request.HasJsonContentType())
+        {
+            request = await ctx.Request.ReadFromJsonAsync<TRequest>(ct);
+        }
+
+        return request;
     }
 
     public abstract Task<TResponse> HandleAsync(TRequest request, CancellationToken ct);

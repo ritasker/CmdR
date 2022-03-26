@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CmdR;
+namespace CmdR.Extensions;
 
 public static class CmdRExtensions
 {

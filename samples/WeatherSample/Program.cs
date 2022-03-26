@@ -1,4 +1,4 @@
-using CmdR;
+using CmdR.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
